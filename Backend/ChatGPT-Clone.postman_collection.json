@@ -1,0 +1,451 @@
+{
+	"info": {
+		"_postman_id": "a9abecd1-b2e4-4fac-b176-ae233f880be2",
+		"name": "ChatGPT Clone API",
+		"description": "REST API of the ChatGPT Clone (FastAPI + MySQL + OpenAI).\n\nRun the requests of the **Conversations** folder in order - the first one saves the new conversation id in the `conversationId` collection variable and the next ones use it.\n\nAll errors are returned as `{\"error\": \"...\"}`. Interactive docs: http://localhost:8000/docs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Check server & database",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+									"pm.test('Database is connected', () => pm.expect(pm.response.json().database).to.eql('connected'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Checks that the server is up and connected to MySQL, and shows the configured OpenAI model."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Conversations",
+			"item": [
+				{
+					"name": "1. Start a new conversation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201));",
+									"const conversation = pm.response.json();",
+									"pm.test('Has a unique conversation id', () => pm.expect(conversation.conversationId).to.match(/^[0-9a-f-]{36}$/));",
+									"pm.collectionVariables.set('conversationId', conversation.conversationId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/conversations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations"
+							]
+						},
+						"description": "Creates a new empty conversation with a unique id (UUID). Its title is set from the first message."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Send a message (full reply)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201));",
+									"const exchange = pm.response.json();",
+									"pm.test('User message saved with role \"user\"', () => pm.expect(exchange.userMessage.role).to.eql('user'));",
+									"pm.test('Reply saved with role \"assistant\"', () => {",
+									"    pm.expect(exchange.assistantMessage.role).to.eql('assistant');",
+									"    pm.expect(exchange.assistantMessage.content).to.not.be.empty;",
+									"});",
+									"pm.test('First message became the title', () => pm.expect(exchange.conversation.title).to.eql('Tell me a one-liner programming joke'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/{{conversationId}}/messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"{{conversationId}}",
+								"messages"
+							]
+						},
+						"description": "Sends a user message. The server loads the conversation from the database, sends it to OpenAI, saves the user message and the reply, and returns both.",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Tell me a one-liner programming joke\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Continue the conversation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201));",
+									"pm.test('Got a reply', () => pm.expect(pm.response.json().assistantMessage.content).to.not.be.empty);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/{{conversationId}}/messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"{{conversationId}}",
+								"messages"
+							]
+						},
+						"description": "A follow-up message in the same conversation - the AI receives the whole conversation, so it answers in the same context.",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"still one-liner, but change the subject\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Send a message (streaming reply)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+									"pm.test('Content type is text/event-stream', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/event-stream'));",
+									"pm.test('Stream ends with a \"done\" event', () => pm.expect(pm.response.text()).to.include('event: done'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/{{conversationId}}/messages/stream",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"{{conversationId}}",
+								"messages",
+								"stream"
+							]
+						},
+						"description": "The endpoint the React client uses. The reply is streamed as Server-Sent Events (text/event-stream):\n\n- `delta` `{content}` - the next piece of the reply\n- `done` `{conversation, userMessage, assistantMessage}` - both messages were saved\n- `error` `{error, status}` - the AI request failed (nothing is saved)",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Now explain the joke in one sentence\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Get the conversation with all its messages",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+									"const messages = pm.response.json().messages;",
+									"pm.test('Has 3 user messages and 3 replies, in order', () => {",
+									"    pm.expect(messages.length).to.eql(6);",
+									"    messages.forEach((message, i) => pm.expect(message.role).to.eql(i % 2 === 0 ? 'user' : 'assistant'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/{{conversationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"{{conversationId}}"
+							]
+						},
+						"description": "Returns the conversation and all of its messages in order. `role` shows who wrote each message: `user` or `assistant`."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Get all conversations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+									"pm.test('Includes our conversation', () => {",
+									"    const ids = pm.response.json().map(c => c.conversationId);",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('conversationId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/conversations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations"
+							]
+						},
+						"description": "Returns all conversations, most recently active first."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Delete the conversation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/{{conversationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"{{conversationId}}"
+							]
+						},
+						"description": "Deletes the conversation and all of its messages."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Errors",
+			"item": [
+				{
+					"name": "Conversation not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404));",
+									"pm.test('Has an error message', () => pm.expect(pm.response.json().error).to.include('was not found'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/00000000-0000-4000-8000-000000000000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"00000000-0000-4000-8000-000000000000"
+							]
+						},
+						"description": "A conversation id that doesn't exist returns 404."
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid conversation id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 422', () => pm.response.to.have.status(422));",
+									"pm.test('Has an error message', () => pm.expect(pm.response.json().error).to.include('conversation_id'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/123",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"123"
+							]
+						},
+						"description": "The id must be a UUID - anything else returns 422."
+					},
+					"response": []
+				},
+				{
+					"name": "Empty message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 422', () => pm.response.to.have.status(422));",
+									"pm.test('Has an error message', () => pm.expect(pm.response.json().error).to.include('content'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/conversations/00000000-0000-4000-8000-000000000000/messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversations",
+								"00000000-0000-4000-8000-000000000000",
+								"messages"
+							]
+						},
+						"description": "A message must contain text - an empty message returns 422.",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"   \"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "conversationId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

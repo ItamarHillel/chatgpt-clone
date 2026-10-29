@@ -1,0 +1,11 @@
+.Logo {
+    flex-shrink: 0;
+}
+
+.Logo-background {
+    fill: var(--color-button);
+}
+
+.Logo-bubble {
+    fill: var(--color-button-text);
+}

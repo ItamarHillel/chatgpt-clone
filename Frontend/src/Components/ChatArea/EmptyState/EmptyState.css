@@ -1,0 +1,13 @@
+.EmptyState {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 400;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+@media (max-width: 767px) {
+    .EmptyState {
+        font-size: 24px;
+    }
+}

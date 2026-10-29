@@ -1,0 +1,44 @@
+.MessageItem-user {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.MessageItem-bubble {
+    max-width: min(70%, 560px);
+    padding: 10px 18px;
+    border-radius: 22px;
+    background: var(--color-bubble);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.MessageItem-user.failed .MessageItem-bubble {
+    opacity: 0.6;
+}
+
+.MessageItem-status {
+    padding-inline-end: 8px;
+    font-size: 12px;
+    color: var(--color-danger);
+}
+
+.MessageItem-assistant {
+    min-width: 0;
+}
+
+.MessageItem-actions {
+    display: flex;
+    gap: 2px;
+    margin-top: 4px;
+    margin-inline-start: -6px;
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 767px) {
+    .MessageItem-bubble {
+        max-width: 85%;
+    }
+}

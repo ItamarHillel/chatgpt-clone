@@ -1,0 +1,28 @@
+.Page404 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 16px 12vh;
+    text-align: center;
+}
+
+.Page404-code {
+    margin: 0;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-text-muted);
+}
+
+.Page404 h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.Page404 p {
+    margin: 0 0 16px;
+    color: var(--color-text-secondary);
+}

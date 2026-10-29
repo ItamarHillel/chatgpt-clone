@@ -1,0 +1,65 @@
+.Home {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* New chat: the greeting and the message box in the middle of the page */
+.Home-new-chat {
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 0 16px 12vh;
+}
+
+.Home-new-chat .ChatInput {
+    max-width: var(--content-width);
+}
+
+/* An open chat: the message box stays at the bottom */
+.Home-footer {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: calc(var(--content-width) + 32px);
+    margin: 0 auto;
+    padding: 0 16px 10px;
+}
+
+.Home-disclaimer {
+    margin: 8px 0 0;
+    font-size: 12px;
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+/* Loading / error */
+.Home-center {
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.Home-center h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--color-text);
+}
+
+.Home-center p {
+    max-width: 480px;
+    margin: 0 0 8px;
+}
+
+.Home-error-icon {
+    color: var(--color-danger);
+}
+
+@media (max-width: 767px) {
+    .Home-new-chat {
+        padding-bottom: 6vh;
+    }
+}

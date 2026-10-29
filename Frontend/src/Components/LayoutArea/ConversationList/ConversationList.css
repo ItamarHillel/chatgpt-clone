@@ -1,0 +1,91 @@
+.ConversationList {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 8px -8px 0;
+    padding: 0 8px 8px;
+}
+
+.ConversationList h3 {
+    margin: 0;
+    padding: 14px 10px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.ConversationList ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ConversationList li {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.ConversationList li:hover {
+    background: var(--color-hover);
+}
+
+.ConversationList li.active {
+    background: var(--color-active);
+}
+
+.ConversationList li a {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-text);
+    font-size: 14px;
+    text-decoration: none;
+    text-align: start;
+}
+
+.ConversationList-delete {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-inline-end: 4px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    opacity: 0;
+}
+
+.ConversationList li:hover .ConversationList-delete,
+.ConversationList li.active .ConversationList-delete,
+.ConversationList-delete:focus-visible {
+    opacity: 1;
+}
+
+.ConversationList-delete:hover {
+    color: var(--color-danger);
+}
+
+/* Touch screens have no hover - always show the delete button. */
+@media (hover: none) {
+    .ConversationList-delete {
+        opacity: 1;
+    }
+}
+
+.ConversationList-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 12px 10px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+}

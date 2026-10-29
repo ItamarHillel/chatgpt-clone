@@ -1,0 +1,58 @@
+.ChatInput {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 10px 10px 22px;
+    border: 1px solid var(--color-input-border);
+    border-radius: 28px;
+    background: var(--color-input);
+    box-shadow: var(--shadow-input);
+    cursor: text;
+}
+
+.ChatInput:focus-within {
+    border-color: var(--color-input-border-focus);
+}
+
+.ChatInput textarea {
+    flex: 1;
+    min-width: 0;
+    max-height: 200px;
+    margin: 6px 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    resize: none;
+    background: transparent;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.ChatInput textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+.ChatInput-button {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    transition: opacity 0.15s ease;
+}
+
+.ChatInput-button:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+.ChatInput-button:disabled {
+    background: var(--color-button-disabled);
+    color: var(--color-bg);
+}

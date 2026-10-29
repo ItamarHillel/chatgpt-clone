@@ -1,0 +1,28 @@
+# Optional - runs MySQL 8.4 in Docker instead of a local MySQL installation.
+# On the first start the database is imported from chatgpt_clone.sql.
+#
+#   docker compose -f Database/docker-compose.yml up -d      (start)
+#   docker compose -f Database/docker-compose.yml down -v    (stop and delete the data)
+#
+# The root password must match DB_PASSWORD in Backend/.env.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: chatgpt-clone-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      TZ: UTC
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ./chatgpt_clone.sql:/docker-entrypoint-initdb.d/chatgpt_clone.sql:ro
+      - chatgpt-clone-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p12345678"]
+      interval: 5s
+      retries: 20
+
+volumes:
+  chatgpt-clone-data:
