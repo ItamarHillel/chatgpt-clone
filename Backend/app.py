@@ -12,6 +12,7 @@ from utils.app_config import AppConfig
 from utils.error_handlers import register_error_handlers
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-8s [%(name)s] %(message)s")
+logging.getLogger("watchfiles").setLevel(logging.WARNING)  # The auto-reloader logs every file it sees change.
 logger = logging.getLogger("app")
 
 
