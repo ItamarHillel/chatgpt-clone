@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 from contextlib import contextmanager
 from typing import Any, Iterator
 
@@ -14,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 # How long a request waits for a free pooled connection before giving up.
 _ACQUIRE_TIMEOUT_SECONDS = 10
+# After a failed connection attempt, MySQL is tried again only after this many seconds.
+_RETRY_AFTER_SECONDS = 2
 
 
 class DAL:
@@ -25,6 +28,7 @@ class DAL:
 
     _pool: MySQLConnectionPool | None = None
     _pool_lock = threading.Lock()
+    _pool_failed_at = float("-inf")  # When connecting to MySQL last failed (time.monotonic).
     # mysql-connector's pool fails immediately when it is exhausted,
     # so a semaphore makes callers wait for a free connection instead.
     _slots = threading.BoundedSemaphore(AppConfig.db_pool_size)
@@ -34,21 +38,33 @@ class DAL:
         if cls._pool is None:
             with cls._pool_lock:
                 if cls._pool is None:
-                    cls._pool = MySQLConnectionPool(
-                        pool_name="chatgpt_clone_pool",
-                        pool_size=AppConfig.db_pool_size,
-                        host=AppConfig.db_host,
-                        port=AppConfig.db_port,
-                        user=AppConfig.db_user,
-                        password=AppConfig.db_password,
-                        database=AppConfig.db_name,
-                        charset="utf8mb4",
-                        collation="utf8mb4_unicode_ci",
-                        autocommit=False,
-                        connection_timeout=10,
-                    )
-                    logger.info("MySQL connection pool created (%s@%s:%s/%s)", AppConfig.db_user, AppConfig.db_host, AppConfig.db_port, AppConfig.db_name)
+                    # Requests that waited here while MySQL was unreachable fail right away, instead of each waiting again.
+                    if time.monotonic() - cls._pool_failed_at < _RETRY_AFTER_SECONDS:
+                        raise mysql_errors.InterfaceError("MySQL was unreachable a moment ago.")
+                    cls._pool = cls._create_pool()
         return cls._pool
+
+    @classmethod
+    def _create_pool(cls) -> MySQLConnectionPool:
+        try:
+            pool = MySQLConnectionPool(
+                pool_name="chatgpt_clone_pool",
+                pool_size=AppConfig.db_pool_size,
+                host=AppConfig.db_host,
+                port=AppConfig.db_port,
+                user=AppConfig.db_user,
+                password=AppConfig.db_password,
+                database=AppConfig.db_name,
+                charset="utf8mb4",
+                collation="utf8mb4_unicode_ci",
+                autocommit=False,
+                connection_timeout=10,
+            )
+        except mysql_errors.Error:
+            cls._pool_failed_at = time.monotonic()
+            raise
+        logger.info("MySQL connection pool created (%s@%s:%s/%s)", AppConfig.db_user, AppConfig.db_host, AppConfig.db_port, AppConfig.db_name)
+        return pool
 
     @contextmanager
     def transaction(self) -> Iterator[MySQLCursorDict]:

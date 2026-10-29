@@ -63,7 +63,7 @@ sequenceDiagram
 ```
 ItamarHillel/
 ├── Database/
-│   ├── chatgpt_clone.sql          # Database export (structure + sample data) - import this
+│   ├── chatgpt_clone.sql          # Database export (structure + data) - import this
 │   ├── schema.sql                 # The schema only, documented
 │   └── docker-compose.yml         # Optional: run MySQL in Docker
 ├── Backend/                       # Python FastAPI REST API
@@ -155,7 +155,7 @@ A Postman collection with all the requests and tests is in [`Backend/ChatGPT-Clo
 ### Prerequisites
 
 - Python 3.10+
-- Node.js 20+
+- Node.js 20.19+ or 22.12+
 - MySQL 8 (or Docker)
 - An OpenAI API key – https://platform.openai.com/api-keys
 
@@ -174,10 +174,12 @@ cd Backend
 python -m venv .venv
 .venv\Scripts\activate            # Windows   (macOS / Linux: source .venv/bin/activate)
 pip install -r requirements.txt
-copy .env.example .env            # Windows   (macOS / Linux: cp .env.example .env)
+copy .env.example .env            # Only if Backend/.env doesn't exist yet   (macOS / Linux: cp .env.example .env)
 ```
 
-Edit `Backend/.env` – set `OPENAI_API_KEY` and the MySQL user / password (`DB_USER`, `DB_PASSWORD`). Then run the server:
+If PowerShell blocks `activate` ("running scripts is disabled"), run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or use Command Prompt.
+
+Edit `Backend/.env` – set `OPENAI_API_KEY` and your MySQL user / password (`DB_USER`, `DB_PASSWORD`). Then run the server:
 
 ```bash
 python app.py

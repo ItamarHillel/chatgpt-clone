@@ -152,9 +152,9 @@ USE `chatgpt_clone`;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
 /*!50001 SET character_set_client      = utf8mb4 */;
 /*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 SET collation_connection      = utf8mb4_unicode_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-
+/*!50013 SQL SECURITY INVOKER */
 /*!50001 VIEW `conversation_messages_view` AS select `c`.`conversation_id` AS `conversation_id`,`c`.`title` AS `conversation_title`,`m`.`message_id` AS `message_id`,`r`.`role_name` AS `sender`,`m`.`content` AS `content`,`m`.`created_at` AS `created_at` from ((`messages` `m` join `conversations` `c` on((`c`.`conversation_id` = `m`.`conversation_id`))) join `roles` `r` on((`r`.`role_id` = `m`.`role_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
