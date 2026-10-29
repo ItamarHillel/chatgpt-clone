@@ -1,4 +1,5 @@
 import type { ChatMessageModel } from "../../../Models/ChatMessageModel";
+import { getTextDirection } from "../../../Utils/TextUtils";
 import { CopyButton } from "../../SharedArea/CopyButton/CopyButton";
 import { MarkdownContent } from "../MarkdownContent/MarkdownContent";
 import { TypingIndicator } from "../TypingIndicator/TypingIndicator";
@@ -10,7 +11,7 @@ export function MessageItem({ message }: { message: ChatMessageModel }) {
         return (
             <article className={`MessageItem MessageItem-user ${message.isFailed ? "failed" : ""}`}>
                 <h4 className="visually-hidden">You said:</h4>
-                <div className="MessageItem-bubble" dir="auto">{message.content}</div>
+                <div className="MessageItem-bubble" dir={getTextDirection(message.content)}>{message.content}</div>
                 {message.isFailed && <span className="MessageItem-status">Not sent</span>}
             </article>
         );

@@ -11,9 +11,8 @@
     margin-bottom: 0;
 }
 
-/* Every paragraph picks its own direction, so mixed Hebrew / English replies read correctly. */
+/* The whole reply takes one direction (by its main language - see TextUtils), so lists, tables and punctuation line up. */
 .MarkdownContent :is(p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th) {
-    unicode-bidi: plaintext;
     text-align: start;
 }
 

@@ -1,5 +1,5 @@
 -- ============================================================================
---  ChatGPT Clone - database export (structure + sample data)
+--  ChatGPT Clone - database export (structure + real conversations created with the app)
 --  Author : Itamar Hillel
 --  Import : MySQL Workbench > Server > Data Import > Import from Self-Contained File
 --           or:  mysql -u root -p < chatgpt_clone.sql
@@ -71,7 +71,7 @@ CREATE TABLE `conversations` (
 
 LOCK TABLES `conversations` WRITE;
 /*!40000 ALTER TABLE `conversations` DISABLE KEYS */;
-INSERT INTO `conversations` VALUES ('5b0f8f7e-3c1a-4d7e-9a51-2f6c8e1d4b20','Tell me a one-liner programming joke','2026-10-29 06:00:02.310','2026-10-29 06:00:41.020'),('c2a9e6d4-7b38-4f0e-8d12-9e5b1a7c3f64','מה ההבדל בין SQL ל-NoSQL? תשובה קצרה','2026-10-29 06:05:00.540','2026-10-29 06:05:12.870');
+INSERT INTO `conversations` VALUES ('c5fc45b4-b3ed-45d5-9b87-38ff53dbcf2e','מה ההבדל בין SQL ל-NoSQL? תשובה קצרה','2026-10-29 08:20:36.297','2026-10-29 08:20:39.638'),('dd239df1-cabb-47b1-85f0-730772a727c4','Tell me a one-liner programming joke','2026-10-29 08:20:32.711','2026-10-29 08:20:36.133');
 /*!40000 ALTER TABLE `conversations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +93,7 @@ CREATE TABLE `messages` (
   KEY `fk_messages_role` (`role_id`),
   CONSTRAINT `fk_messages_conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`conversation_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_messages_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Messages of all conversations';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Messages of all conversations';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES (1,'5b0f8f7e-3c1a-4d7e-9a51-2f6c8e1d4b20',1,'Tell me a one-liner programming joke','2026-10-29 06:00:05.120'),(2,'5b0f8f7e-3c1a-4d7e-9a51-2f6c8e1d4b20',2,'I told my code to stop being so *object-oriented*... but it just couldn\'t stop *class*ifying everything.','2026-10-29 06:00:07.480'),(3,'5b0f8f7e-3c1a-4d7e-9a51-2f6c8e1d4b20',1,'still one-liner, but change the subject','2026-10-29 06:00:38.910'),(4,'5b0f8f7e-3c1a-4d7e-9a51-2f6c8e1d4b20',2,'My debugger and I broke up—turns out it just couldn\'t handle my issues.','2026-10-29 06:00:41.020'),(5,'c2a9e6d4-7b38-4f0e-8d12-9e5b1a7c3f64',1,'מה ההבדל בין SQL ל-NoSQL? תשובה קצרה','2026-10-29 06:05:03.200'),(6,'c2a9e6d4-7b38-4f0e-8d12-9e5b1a7c3f64',2,'**SQL** – מסדי נתונים רלציוניים: הנתונים נשמרים בטבלאות עם סכמה קבועה וקשרים ביניהן, והשאילתות נכתבות בשפת SQL (למשל MySQL).\n\n**NoSQL** – מסדי נתונים לא רלציוניים עם מבנה גמיש (מסמכים, מפתח-ערך, גרפים), שנוחים להתרחבות לכמויות גדולות של נתונים (למשל MongoDB).','2026-10-29 06:05:12.870');
+INSERT INTO `messages` VALUES (13,'dd239df1-cabb-47b1-85f0-730772a727c4',1,'Tell me a one-liner programming joke','2026-10-29 08:20:32.748'),(14,'dd239df1-cabb-47b1-85f0-730772a727c4',2,'Why do programmers prefer dark mode? Because light attracts bugs.','2026-10-29 08:20:34.525'),(15,'dd239df1-cabb-47b1-85f0-730772a727c4',1,'still one-liner, but change the subject','2026-10-29 08:20:34.590'),(16,'dd239df1-cabb-47b1-85f0-730772a727c4',2,'I told my computer I needed a break, and now it won’t stop sending me KitKat ads.','2026-10-29 08:20:36.133'),(17,'c5fc45b4-b3ed-45d5-9b87-38ff53dbcf2e',1,'מה ההבדל בין SQL ל-NoSQL? תשובה קצרה','2026-10-29 08:20:36.325'),(18,'c5fc45b4-b3ed-45d5-9b87-38ff53dbcf2e',2,'**SQL** משתמש במסדי נתונים טבלאיים עם מבנה וסכימה מוגדרים, ומתאים לנתונים מקושרים ולשאילתות מורכבות.  \n**NoSQL** כולל מסדי נתונים לא־טבלאיים, לרוב גמישים יותר במבנה ומתאימים להיקפים גדולים או לנתונים משתנים.','2026-10-29 08:20:38.202'),(19,'c5fc45b4-b3ed-45d5-9b87-38ff53dbcf2e',1,'תן דוגמה אחת לכל אחד מהם','2026-10-29 08:20:38.284'),(20,'c5fc45b4-b3ed-45d5-9b87-38ff53dbcf2e',2,'- **SQL:** PostgreSQL — למשל, טבלת לקוחות עם עמודות מוגדרות כמו שם ואימייל.\n- **NoSQL:** MongoDB — למשל, מסמכי לקוחות שבהם לכל לקוח יכולים להיות שדות שונים.','2026-10-29 08:20:39.638');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,10 +133,6 @@ INSERT INTO `roles` VALUES (1,'user','Message written by the user'),(2,'assistan
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'chatgpt_clone'
---
-
---
 -- Dumping routines for database 'chatgpt_clone'
 --
 
@@ -158,7 +154,7 @@ USE `chatgpt_clone`;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 SQL SECURITY INVOKER */
+
 /*!50001 VIEW `conversation_messages_view` AS select `c`.`conversation_id` AS `conversation_id`,`c`.`title` AS `conversation_title`,`m`.`message_id` AS `message_id`,`r`.`role_name` AS `sender`,`m`.`content` AS `content`,`m`.`created_at` AS `created_at` from ((`messages` `m` join `conversations` `c` on((`c`.`conversation_id` = `m`.`conversation_id`))) join `roles` `r` on((`r`.`role_id` = `m`.`role_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
@@ -173,4 +169,4 @@ USE `chatgpt_clone`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-29  5:36:20
+-- Dump completed on 2026-10-29  8:21:58

@@ -3,6 +3,7 @@ import { memo, useRef, type ReactNode } from "react";
 import Markdown, { type Components } from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import { getTextDirection } from "../../../Utils/TextUtils";
 import { CopyButton } from "../../SharedArea/CopyButton/CopyButton";
 import "./MarkdownContent.css";
 
@@ -45,7 +46,7 @@ interface MarkdownContentProps {
 /** Renders an AI reply written in Markdown (GitHub flavor) with syntax highlighted code. Raw HTML is not rendered. */
 export const MarkdownContent = memo(function MarkdownContent({ content, isStreaming }: MarkdownContentProps) {
     return (
-        <div className={`MarkdownContent ${isStreaming ? "streaming" : ""}`} dir="auto">
+        <div className={`MarkdownContent ${isStreaming ? "streaming" : ""}`} dir={getTextDirection(content)}>
             <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]} components={components}>
                 {content}
             </Markdown>
